@@ -1,0 +1,36 @@
+import axios from 'axios';
+
+const API_URL = '/api/admin';
+
+const getStats = async (token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const { data } = await axios.get(`${API_URL}/stats`, config);
+  return data;
+};
+
+const getLoginLogs = async (token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const { data } = await axios.get(`${API_URL}/login-logs`, config);
+  return data;
+};
+
+const getAllAppointments = async (token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const { data } = await axios.get('/api/appointments/admin', config);
+  return data;
+};
+
+const getAllReports = async (token) => {
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  const { data } = await axios.get('/api/reports/admin', config);
+  return data;
+};
+
+const adminService = {
+  getStats,
+  getLoginLogs,
+  getAllAppointments,
+  getAllReports,
+};
+
+export default adminService;
