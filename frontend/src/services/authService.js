@@ -1,55 +1,83 @@
-import axios from 'axios';
-
-const API_URL = '/api/auth';
+import { apiService } from './apiService.js';
 
 /**
  * Service to handle authentication API calls
  */
 const register = async (userData) => {
-  const response = await axios.post(`${API_URL}/register`, userData);
-  if (response.data) {
-    localStorage.setItem('userInfo', JSON.stringify(response.data));
+  // Validate input
+  if (!userData || !userData.email || !userData.password) {
+    throw new Error('Email and password are required');
   }
-  return response.data;
+  
+  const data = await apiService.register(userData);
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
+  return data;
 };
 
-const login = async (userData) => {
-  const response = await axios.post(`${API_URL}/login`, userData);
-  if (response.data) {
-    localStorage.setItem('userInfo', JSON.stringify(response.data));
+const login = async (credentials) => {
+  // Validate input
+  if (!credentials || !credentials.email || !credentials.password) {
+    throw new Error('Email and password are required');
   }
-  return response.data;
+  
+  const data = await apiService.login(credentials);
+  if (data.token) {
+    localStorage.setItem('token', data.token);
+  }
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
+  return data;
 };
 
 const logout = () => {
-  localStorage.removeItem('userInfo');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('userInfo'); // Remove old key
 };
 
-const getProfile = async (token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.get(`${API_URL}/profile`, config);
-  return response.data;
-};
-
-const updateProfile = async (userData, token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.put(`${API_URL}/profile`, userData, config);
-  if (response.data) {
-    localStorage.setItem('userInfo', JSON.stringify(response.data));
+const getProfile = async () => {
+  const data = await apiService.getProfile();
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
   }
-  return response.data;
+  return data;
 };
 
-const getUsers = async (token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.get(`${API_URL}/users`, config);
-  return response.data;
+const updateProfile = async (userData) => {
+  // Validate input
+  if (!userData) {
+    throw new Error('User data is required');
+  }
+  
+  const data = await apiService.updateProfile(userData);
+  if (data.user) {
+    localStorage.setItem('user', JSON.stringify(data.user));
+  }
+  return data;
 };
 
-const getUserById = async (id, token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const response = await axios.get(`${API_URL}/users/${id}`, config);
-  return response.data;
+const getUsers = async () => {
+  const data = await apiService.adminGetUsers();
+  return data;
+};
+
+const getUserById = async (id) => {
+  if (!id) {
+    throw new Error('User ID is required');
+  }
+  
+  const data = await apiService.adminGetUsers();
+  const user = data.find(u => u._id === id);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
 };
 
 const authService = {

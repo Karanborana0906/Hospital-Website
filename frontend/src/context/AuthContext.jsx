@@ -8,23 +8,40 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        authService.logout();
+      }
     }
     setLoading(false);
   }, []);
 
   const loginUser = async (credentials) => {
-    const data = await authService.login(credentials);
-    setUser(data);
-    return data;
+    try {
+      const data = await authService.login(credentials);
+      setUser(data.user || data);
+      return data;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const registerUser = async (userData) => {
-    const data = await authService.register(userData);
-    setUser(data);
-    return data;
+    try {
+      const data = await authService.register(userData);
+      setUser(data.user || data);
+      return data;
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    }
   };
 
   const logoutUser = () => {

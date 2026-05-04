@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Star, Clock, Calendar, MapPin, ChevronRight, Navigation, Check } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useApi } from '../hooks/useApi.js';
+import { apiService } from '../services/apiService.js';
 import { calculateDistance, formatDistance } from '../services/locationService';
 import MapComponent from '../components/MapComponent';
+import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import ErrorMessage from '../components/ErrorMessage.jsx';
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
@@ -16,54 +19,52 @@ const Doctors = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // In a real app we fetch this from API, for UI demonstration we use placeholder or fetch if backend ready
-    const fetchDoctors = async () => {
-      try {
-        const { data } = await axios.get('/api/doctors');
-        setDoctors(data);
-      } catch (error) {
-        console.error('Error fetching doctors', error);
-        // Fallback data if DB is empty
-        setDoctors([
-          {
-            _id: '1',
-            userId: { name: 'Dr. Sarah Jenkins' },
-            specialization: 'Cardiology',
-            experience: 15,
-            about: 'Specializes in heart conditions and cardiovascular surgery.',
-            fees: 150,
-            city: 'Mumbai',
-            location: { lat: 19.0760, lng: 72.8777 }
-          },
-          {
-            _id: '2',
-            userId: { name: 'Dr. Michael Chen' },
-            specialization: 'Neurology',
-            experience: 12,
-            about: 'Expert in treating neurological disorders and brain injuries.',
-            fees: 180,
-            city: 'Delhi',
-            location: { lat: 28.6139, lng: 77.2090 }
-          },
-          {
-             _id: '3',
-             userId: { name: 'Dr. Emily Parker' },
-             specialization: 'Pediatrics',
-             experience: 8,
-             about: 'Compassionate pediatric care for infants to young adults.',
-             fees: 100,
-             city: 'Mumbai',
-             location: { lat: 19.1070, lng: 72.8377 }
-          }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { data: doctorsData, loading: apiLoading, error: apiError } = useApi(apiService.getDoctors);
 
-    fetchDoctors();
-  }, []);
+  useEffect(() => {
+    if (doctorsData) {
+      setDoctors(doctorsData);
+    }
+    setLoading(apiLoading);
+  }, [doctorsData, apiLoading]);
+
+  // Fallback data if API fails or DB is empty
+  useEffect(() => {
+    if (apiError && doctors.length === 0) {
+      setDoctors([
+        {
+          _id: '1',
+          userId: { name: 'Dr. Sarah Jenkins' },
+          specialization: 'Cardiology',
+          experience: 15,
+          about: 'Specializes in heart conditions and cardiovascular surgery.',
+          fees: 150,
+          city: 'Mumbai',
+          location: { lat: 19.0760, lng: 72.8777 }
+        },
+        {
+          _id: '2',
+          userId: { name: 'Dr. Michael Chen' },
+          specialization: 'Neurology',
+          experience: 12,
+          about: 'Expert in treating neurological disorders and brain injuries.',
+          fees: 180,
+          city: 'Delhi',
+          location: { lat: 28.6139, lng: 77.2090 }
+        },
+        {
+           _id: '3',
+           userId: { name: 'Dr. Emily Parker' },
+           specialization: 'Pediatrics',
+           experience: 8,
+           about: 'Compassionate pediatric care for infants to young adults.',
+           fees: 100,
+           city: 'Mumbai',
+           location: { lat: 19.1070, lng: 72.8377 }
+        }
+      ]);
+    }
+  }, [apiError]);
 
   // Calculate distances and filter
   const processedDoctors = doctors
@@ -177,9 +178,18 @@ const Doctors = () => {
           </div>
         </div>
 
+        {apiError && (
+          <div className="mb-6">
+            <ErrorMessage 
+              message={apiError} 
+              variant="warning"
+            />
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <LoadingSpinner size="large" text="Loading doctors..." />
           </div>
         ) : viewMode === 'map' ? (
           <div className="max-w-6xl mx-auto h-[600px]">
