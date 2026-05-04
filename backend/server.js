@@ -20,18 +20,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use((req, res, next) => {
-  console.log(`${req.method} request to ${req.url}`);
-  next();
-});
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://your-frontend-domain.com'] // Replace with your frontend URL
+    : true, // Allow all origins in development
+  credentials: true,
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/smart-hospital')
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://karanborana941_db_user:wOJUyV9oRvUWoQus@cluster0.xxxxx.mongodb.net/myDatabase";
+
+mongoose.connect(MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.log(err));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -49,8 +53,20 @@ app.get('/api/health', (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  console.error('Error:', err.message);
+  
+  if (process.env.NODE_ENV === 'production') {
+    // Don't expose stack trace in production
+    res.status(err.status || 500).json({
+      message: err.message || 'Internal Server Error',
+    });
+  } else {
+    // Show full error in development
+    res.status(err.status || 500).json({
+      message: err.message || 'Internal Server Error',
+      stack: err.stack,
+    });
+  }
 });
 
 app.listen(PORT, () => {
