@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.com'] // Replace with your frontend URL
+    ? process.env.FRONTEND_URL || false
     : true, // Allow all origins in development
   credentials: true,
 }));
@@ -31,11 +31,22 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Database Connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://karanborana941_db_user:wOJUyV9oRvUWoQus@cluster0.xxxxx.mongodb.net/myDatabase";
+if (!process.env.MONGO_URI) {
+  console.error('ERROR: MONGO_URI environment variable is not set');
+  process.exit(1);
+}
 
-mongoose.connect(MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch((err) => console.log(err));
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('✅ MongoDB connected successfully');
+})
+.catch((err) => {
+  console.error('❌ MongoDB connection error:', err.message);
+  process.exit(1);
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -46,6 +57,11 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/hospitals', hospitalRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Routes
+app.get('/', (req, res) => {
+  res.send('API is running 🚀');
+});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'Ok', message: 'API is running' });
