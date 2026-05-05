@@ -1,34 +1,29 @@
-import axios from 'axios';
+import { apiService } from './apiService.js';
 
-const API_URL = '/api/doctors';
+const getStats = async () => {
+  const data = await apiService.getDoctors(); // Using getDoctors as fallback
+  return { stats: { totalDoctors: data.length, availableDoctors: data.filter(d => d.available).length } };
+};
 
-const getStats = async (token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const { data } = await axios.get(`${API_URL}/stats`, config);
+const getAppointments = async () => {
+  const data = await apiService.getAppointments();
   return data;
 };
 
-const getAppointments = async (token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const { data } = await axios.get('/api/appointments/doctor', config);
+const getReports = async () => {
+  const data = await apiService.getReports();
   return data;
 };
 
-const getReports = async (token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const { data } = await axios.get('/api/reports/doctor', config);
-  return data;
-};
-
-const updateProfile = async (doctorData, token) => {
-  const config = { headers: { Authorization: `Bearer ${token}` } };
-  const { data } = await axios.put(`${API_URL}/profile`, doctorData, config);
+const updateProfile = async (doctorData) => {
+  const data = await apiService.updateProfile(doctorData);
   return data;
 };
 
 const getDoctorByUserId = async (userId) => {
-    const { data } = await axios.get(`${API_URL}/user/${userId}`);
-    return data;
+  const doctors = await apiService.getDoctors();
+  const doctor = doctors.find(d => d.userId === userId || d.userId?._id === userId);
+  return doctor;
 };
 
 const doctorService = {

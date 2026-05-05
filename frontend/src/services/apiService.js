@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { API_BASE_URL, DEFAULT_HEADERS, getAuthHeaders } from '../config/api.js';
 
+// Debug: Log the base URL
+console.log('API Base URL:', API_BASE_URL);
+
 // Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,9 +11,10 @@ const api = axios.create({
   timeout: 30000, // 30 seconds timeout
 });
 
-// Request interceptor to add auth token
+// Request interceptor to add auth token and debug
 api.interceptors.request.use(
   (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.baseURL + config.url);
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
