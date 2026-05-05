@@ -159,8 +159,8 @@ app.use((err, req, res, next) => {
   res.error(message, statusCode);
 });
 
-// 404 Not Found Handler
-app.use('*', (req, res) => {
+// 404 Not Found Handler (FIXED)
+app.use((req, res) => {
   res.error('Route not found', 404);
 });
 
