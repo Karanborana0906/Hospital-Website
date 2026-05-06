@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { User, MapPin, Star, Award, Clock, DollarSign, Calendar, ChevronLeft, Phone, Mail } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/apiService';
 
 const DoctorProfile = () => {
   const { id } = useParams();
@@ -17,7 +17,7 @@ const DoctorProfile = () => {
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const { data } = await axios.get(`/api/doctors/${id}`);
+        const { data } = await api.get(`/api/doctors/${id}`);
         setDoctor(data);
       } catch (error) {
         console.error('Error fetching doctor', error);

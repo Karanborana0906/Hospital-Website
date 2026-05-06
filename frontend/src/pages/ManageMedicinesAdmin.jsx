@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/apiService';
 import { Pill, Plus, Trash, Search, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const ManageMedicinesAdmin = () => {
 
     const fetchMedicines = async () => {
         try {
-            const { data } = await axios.get('/api/medicines');
+            const { data } = await api.get('/api/medicines');
             setMedicines(data);
         } catch (error) {
             console.error(error);
@@ -32,7 +32,7 @@ const ManageMedicinesAdmin = () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            await axios.post('/api/medicines', { name, category, usage, dosage, sideEffects }, config);
+            await api.post('/api/medicines', { name, category, usage, dosage, sideEffects }, config);
             fetchMedicines();
             setShowForm(false);
             // reset form

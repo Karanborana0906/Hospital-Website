@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/apiService';
 import { Calendar as CalendarIcon, Clock, User, AlertCircle } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -52,8 +52,8 @@ const Appointments = () => {
         const config = { headers: { Authorization: `Bearer ${user?.token}` } };
         
         // Use Promise.all if real API, simulating fallback for UI
-        axios.get('/api/appointments', config).then(res => setAppointments(res.data)).catch(err => console.log('Mocking appointments'));
-        axios.get('/api/doctors').then(res => setDoctors(res.data)).catch(err => {
+        api.get('/api/appointments', config).then(res => setAppointments(res.data)).catch(err => console.log('Mocking appointments'));
+        api.get('/api/doctors').then(res => setDoctors(res.data)).catch(err => {
           setDoctors([
             { _id: '69b4fafec84c714ef6b66f46', userId: { name: 'Dr. Sarah Jenkins' }, specialization: 'Cardiology' },
             { _id: '69b4fafec84c714ef6b66f47', userId: { name: 'Dr. Michael Chen' }, specialization: 'Neurology' }
@@ -87,7 +87,7 @@ const Appointments = () => {
     setSuccess('');
     try {
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
-      const { data } = await axios.post('/api/appointments', { doctorId, appointmentDate, timeSlot, reason }, config);
+      const { data } = await api.post('/api/appointments', { doctorId, appointmentDate, timeSlot, reason }, config);
       
       if (data.dateShifted) {
         setSuccess(`Appointment booked successfully! Date shifted from ${new Date(data.originalDate).toLocaleDateString()} to ${new Date(data.finalDate).toLocaleDateString()} due to daily limit.`);

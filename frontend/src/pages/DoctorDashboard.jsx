@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Calendar, Users, FileText, Activity, Clock, ChevronRight, LayoutDashboard, AlertCircle, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
-import axios from 'axios';
+import api from '../services/apiService';
 
 import { useAuth } from '../context/AuthContext';
 import doctorService from '../services/doctorService';
@@ -65,7 +65,7 @@ const DoctorDashboard = () => {
             }
         }
 
-        await axios.put(`/api/appointments/${id}/status`, { status }, config);
+        await api.put(`/api/appointments/${id}/status`, { status }, config);
         
         // Refresh data
         const aptData = await doctorService.getAppointments(userInfo.token);

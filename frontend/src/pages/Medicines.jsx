@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import { Pill, Search, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 
 const Medicines = () => {
@@ -16,7 +16,7 @@ const Medicines = () => {
     setLoading(true);
     try {
       // In a real app we fetch this from API, for UI demonstration we use placeholder if backend fails
-      const { data } = await axios.get(`/api/medicines?keyword=${searchKw}`);
+      const { data } = await apiService.getMedicines(searchKw);
       setMedicines(data);
     } catch (error) {
       console.error('Error fetching medicines', error);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import { Users, Search, Trash, Shield, ShieldAlert, ArrowLeft, Eye } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ const ManageUsers = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             // Note: We need to ensure the backend has an endpoint for this
-            const { data } = await axios.get('/api/auth/users', config);
+            const { data } = await apiService.adminGetUsers();
             setUsers(data);
         } catch (error) {
             console.error(error);

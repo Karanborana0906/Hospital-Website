@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, AlertCircle, Clock, Navigation } from 'lucide-react';
 import MapComponent from '../components/MapComponent';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../services/apiService';
 import { calculateDistance } from '../services/locationService';
 
 const Emergency = () => {
@@ -14,7 +14,7 @@ const Emergency = () => {
   useEffect(() => {
     const fetchHospitals = async () => {
       try {
-        const { data } = await axios.get('/api/hospitals');
+        const { data } = await api.get('/api/hospitals');
         
         let processedHospitals = data;
         

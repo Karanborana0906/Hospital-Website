@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/apiService';
 import { Calendar, CheckCircle, XCircle, Clock, User, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const ManageAppointments = () => {
             // Choose endpoint based on role
             const endpoint = userInfo.role === 'superadmin' ? '/api/appointments/admin' : '/api/appointments/doctor';
             
-            const { data } = await axios.get(endpoint, config);
+            const { data } = await api.get(endpoint, config);
             setAppointments(data);
         } catch (error) {
 
@@ -71,7 +71,7 @@ const ManageAppointments = () => {
                 }
             }
 
-            await axios.put(`/api/appointments/${id}/status`, { status }, config);
+            await api.put(`/api/appointments/${id}/status`, { status }, config);
             
             setAppointments(appointments.map(a => a._id === id ? {...a, status} : a));
         } catch (error) {

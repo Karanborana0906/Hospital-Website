@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import { FileText, Download, ArrowLeft, Search, User, Calendar as CalendarIcon, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const ManageReports = () => {
             // Choose endpoint based on role
             const endpoint = userInfo.role === 'superadmin' ? '/api/reports/admin' : '/api/reports/doctor';
             
-            const { data } = await axios.get(endpoint, config);
+            const { data } = await apiService.adminGetReports();
             setReports(data);
         } catch (error) {
             console.error("Error fetching reports", error);

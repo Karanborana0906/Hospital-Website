@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Users, Calendar, Activity, Pill, UserPlus, Settings, LogOut, ShieldAlert, Clock, Globe, BarChart3, TrendingUp, History, FileText } from 'lucide-react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import adminService from '../services/adminService';
 
 const SuperAdminDashboard = () => {

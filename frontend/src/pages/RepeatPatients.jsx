@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import { Users, Calendar, ArrowLeft, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ const RepeatPatients = () => {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             
-            const { data } = await axios.get('/api/appointments/repeat-patients', config);
+            const { data } = await apiService.getRepeatPatients();
             setRepeatPatients(data);
         } catch (error) {
             console.error('Error fetching repeat patients:', error);

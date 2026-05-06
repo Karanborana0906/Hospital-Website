@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/apiService';
 import { UserPlus, ArrowLeft, Trash, Edit, Check, Eye } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -27,7 +27,7 @@ const ManageDoctors = () => {
 
     const fetchDoctors = async () => {
         try {
-            const { data } = await axios.get('/api/doctors');
+            const { data } = await api.get('/api/doctors');
             setDoctors(data);
         } catch (error) {
             console.error(error);
@@ -45,7 +45,7 @@ const ManageDoctors = () => {
             // In a real app, you'd have an admin endpoint to create doctor + linked user
             // This is a simplified version
             const location = lat && lng ? { lat: Number(lat), lng: Number(lng) } : null;
-            await axios.post('/api/auth/register', { 
+            await api.post('/api/auth/register', { 
                 name, email, password, role: 'doctor', 
                 city, location,
                 specialization, experience, fees, about

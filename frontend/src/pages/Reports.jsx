@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { apiService } from '../services/apiService.js';
 import { FileText, Upload, File, AlertCircle } from 'lucide-react';
 
 const Reports = () => {
@@ -37,7 +37,7 @@ const Reports = () => {
         } 
       };
       
-      const { data } = await axios.post('/api/reports', formData, config);
+      const { data } = await apiService.uploadReport(formData);
       setReports([data, ...reports]);
       setMessage('Report uploaded successfully');
       setTitle('');
