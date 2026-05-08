@@ -15,6 +15,8 @@ const register = async (userData) => {
   }
   if (data.user) {
     localStorage.setItem('user', JSON.stringify(data.user));
+    // Set userInfo for backward compatibility with dashboards
+    localStorage.setItem('userInfo', JSON.stringify({ ...data.user, token: data.token }));
   }
   return data;
 };
@@ -31,6 +33,8 @@ const login = async (credentials) => {
   }
   if (data.user) {
     localStorage.setItem('user', JSON.stringify(data.user));
+    // Set userInfo for backward compatibility with dashboards
+    localStorage.setItem('userInfo', JSON.stringify({ ...data.user, token: data.token }));
   }
   return data;
 };

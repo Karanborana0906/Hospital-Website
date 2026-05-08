@@ -29,6 +29,13 @@ import { useAuth } from './context/AuthContext';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+// Protected Route Component for Authenticated Users
+const PrivateRoute = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" />;
+  return children;
+};
+
 // Protected Route Component for Admin
 const AdminRoute = ({ children }) => {
   const { user } = useAuth();
@@ -53,7 +60,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/chatbot" element={<AdminRoute><div className="p-4 sm:p-8 pt-4"><Chatbot /></div></AdminRoute>} />
+            <Route path="/chatbot" element={<PrivateRoute><div className="p-4 sm:p-8 pt-4"><Chatbot /></div></PrivateRoute>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<PatientDashboard />} />
