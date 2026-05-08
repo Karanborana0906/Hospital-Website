@@ -13,7 +13,16 @@ export const protect = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
 
+      if (!decoded.id) {
+        console.error('JWT decoded but missing id:', decoded);
+      }
+
       req.user = await User.findById(decoded.id).select('-password');
+
+      if (!req.user) {
+        console.error('User not found for ID from token:', decoded.id);
+        return res.status(401).json({ message: 'User no longer exists' });
+      }
 
       return next();
     } catch (error) {

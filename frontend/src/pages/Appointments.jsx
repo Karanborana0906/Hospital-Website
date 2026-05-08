@@ -85,6 +85,12 @@ const Appointments = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (!doctorId) {
+      setError('Please select a doctor from the list.');
+      return;
+    }
+
     try {
       const config = { headers: { Authorization: `Bearer ${user?.token}` } };
       const { data } = await api.post('/api/appointments', { doctorId, appointmentDate, timeSlot, reason }, config);
@@ -106,7 +112,7 @@ const Appointments = () => {
       setTimeSlot('');
       setReason('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Error booking appointment');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Error booking appointment');
     }
   };
 

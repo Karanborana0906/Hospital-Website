@@ -12,6 +12,23 @@ const Reports = () => {
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (!userInfo.token) return;
+      try {
+        const data = await apiService.getReports();
+        if (Array.isArray(data)) {
+          setReports(data);
+        } else if (data && Array.isArray(data.data)) {
+          setReports(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching reports:', err);
+      }
+    };
+    fetchReports();
+  }, [userInfo.token]);
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
@@ -38,14 +55,17 @@ const Reports = () => {
       };
       
       const { data } = await apiService.uploadReport(formData);
-      setReports([data, ...reports]);
-      setMessage('Report uploaded successfully');
-      setTitle('');
-      setDescription('');
-      setFile(null);
-    // Reset file input by finding it, or controlled if React 18 supports it nicely (usually ref is needed)
+      
+      // Safety check for data
+      if (data) {
+        setReports(prev => [data, ...prev]);
+        setMessage('Report uploaded successfully');
+        setTitle('');
+        setDescription('');
+        setFile(null);
+      }
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Error uploading report. (Demo mode active)');
+      setMessage(err.response?.data?.message || err.response?.data?.error || 'Error uploading report.');
     } finally {
       setLoading(false);
     }
@@ -119,24 +139,24 @@ const Reports = () => {
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-slate-800 mb-6">Your Documents</h2>
           
-          {reports.length === 0 ? (
+          {Array.isArray(reports) && reports.length === 0 ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">
               <FileText className="w-12 h-12 mx-auto text-slate-300 mb-3" />
               <p>No medical reports found. Upload your previous reports securely.</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 gap-4">
-               {reports.map((report, idx) => (
+               {Array.isArray(reports) && reports.map((report, idx) => (
                  <div key={idx} className="bg-white p-5 rounded-xl border border-slate-200 hover:shadow-md transition-shadow group flex items-start">
                    <div className="w-10 h-10 rounded bg-indigo-50 flex justify-center items-center text-indigo-500 mr-4 flex-shrink-0 group-hover:bg-indigo-100 transition-colors">
                      <File className="w-5 h-5" />
                    </div>
                    <div className="flex-1 min-w-0">
-                     <h3 className="text-sm font-bold text-slate-800 truncate mb-1" title={report.title}>{report.title}</h3>
-                     <p className="text-xs text-slate-500 mb-2">{new Date(report.uploadDate || Date.now()).toLocaleDateString()}</p>
-                     <p className="text-xs text-slate-600 line-clamp-2">{report.description || 'No description provided.'}</p>
+                     <h3 className="text-sm font-bold text-slate-800 truncate mb-1" title={report?.title || 'Report'}>{report?.title || 'Medical Report'}</h3>
+                     <p className="text-xs text-slate-500 mb-2">{new Date(report?.uploadDate || report?.createdAt || Date.now()).toLocaleDateString()}</p>
+                     <p className="text-xs text-slate-600 line-clamp-2">{report?.description || 'No description provided.'}</p>
                      <div className="mt-3">
-                        <a href={`${report.filePath}`} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">
+                        <a href={report?.filePath ? `${report.filePath}` : '#'} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">
                           View Document &rarr;
                         </a>
                      </div>

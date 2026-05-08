@@ -24,6 +24,10 @@ export const getMyAppointments = async (req, res) => {
 export const bookAppointment = async (req, res) => {
   const { doctorId, appointmentDate, timeSlot, reason } = req.body;
 
+  if (!doctorId || doctorId === "") {
+    return res.status(400).json({ message: 'Doctor selection is required' });
+  }
+
   try {
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
