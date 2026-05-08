@@ -10,13 +10,11 @@ const register = async (userData) => {
   }
   
   const data = await apiService.register(userData);
-  if (data.token) {
+  if (data && data.token) {
     localStorage.setItem('token', data.token);
-  }
-  if (data.user) {
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user', JSON.stringify(data));
     // Set userInfo for backward compatibility with dashboards
-    localStorage.setItem('userInfo', JSON.stringify({ ...data.user, token: data.token }));
+    localStorage.setItem('userInfo', JSON.stringify(data));
   }
   return data;
 };
@@ -28,13 +26,11 @@ const login = async (credentials) => {
   }
   
   const data = await apiService.login(credentials);
-  if (data.token) {
+  if (data && data.token) {
     localStorage.setItem('token', data.token);
-  }
-  if (data.user) {
-    localStorage.setItem('user', JSON.stringify(data.user));
+    localStorage.setItem('user', JSON.stringify(data));
     // Set userInfo for backward compatibility with dashboards
-    localStorage.setItem('userInfo', JSON.stringify({ ...data.user, token: data.token }));
+    localStorage.setItem('userInfo', JSON.stringify(data));
   }
   return data;
 };
@@ -47,8 +43,9 @@ const logout = () => {
 
 const getProfile = async () => {
   const data = await apiService.getProfile();
-  if (data.user) {
-    localStorage.setItem('user', JSON.stringify(data.user));
+  if (data) {
+    localStorage.setItem('user', JSON.stringify(data));
+    localStorage.setItem('userInfo', JSON.stringify(data));
   }
   return data;
 };
@@ -60,8 +57,9 @@ const updateProfile = async (userData) => {
   }
   
   const data = await apiService.updateProfile(userData);
-  if (data.user) {
-    localStorage.setItem('user', JSON.stringify(data.user));
+  if (data) {
+    localStorage.setItem('user', JSON.stringify(data));
+    localStorage.setItem('userInfo', JSON.stringify(data));
   }
   return data;
 };
