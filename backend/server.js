@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import helmet from 'helmet';
+import fs from 'fs';
 import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
 
@@ -97,7 +98,15 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('📁 Created uploads directory');
+}
+
+app.use('/uploads', express.static(uploadsDir));
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI, {

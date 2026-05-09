@@ -87,6 +87,10 @@ export const getDoctorReports = async (req, res) => {
         ]
     })
     .populate('patientId', 'name email')
+    .populate({
+        path: 'doctorId',
+        populate: { path: 'userId', select: 'name' }
+    })
     .sort({ uploadDate: -1 });
     
     res.json(reports);
