@@ -1,4 +1,5 @@
 import { createReport, fetchUserReports, fetchAllReports, fetchDoctorReports } from '../services/reportService.js';
+import Report from '../models/reportModel.js';
 import Doctor from '../models/doctorModel.js';
 import Appointment from '../models/appointmentModel.js';
 
