@@ -32,7 +32,11 @@ const DoctorDashboard = () => {
             setStats(statsData);
             
             const aptData = await doctorService.getAppointments(userInfo.token);
-            setAppointments(aptData); // Store all for availability check
+            if (Array.isArray(aptData)) {
+                setAppointments(aptData);
+            } else if (aptData && Array.isArray(aptData.data)) {
+                setAppointments(aptData.data);
+            }
         } catch (error) {
             console.error("Error fetching doctor data", error);
         } finally {
@@ -69,7 +73,11 @@ const DoctorDashboard = () => {
         
         // Refresh data
         const aptData = await doctorService.getAppointments(userInfo.token);
-        setAppointments(aptData.slice(0, 5));
+        if (Array.isArray(aptData)) {
+            setAppointments(aptData.slice(0, 5));
+        } else if (aptData && Array.isArray(aptData.data)) {
+            setAppointments(aptData.data.slice(0, 5));
+        }
         const statsData = await doctorService.getStats(userInfo.token);
         setStats(statsData);
     } catch (error) {
@@ -141,7 +149,7 @@ const DoctorDashboard = () => {
                 </div>
             ) : appointments.length > 0 ? (
                 <div className="divide-y divide-slate-50">
-                    {appointments.map((apt) => (
+                    {Array.isArray(appointments) && appointments.map((apt) => (
                         <div key={apt._id} className="p-5 hover:bg-slate-50/80 transition-colors flex items-center justify-between group">
                             <div className="flex items-center gap-4">
                                 <div className={`w-2 h-10 rounded-full ${apt.status === 'approved' ? 'bg-emerald-400' : apt.status === 'cancelled' ? 'bg-red-400' : 'bg-amber-400'}`} />
@@ -213,11 +221,11 @@ const DoctorDashboard = () => {
             
             <div className="grid grid-cols-2 gap-3 mb-6">
                 {['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'].map(slot => {
-                    const apt = appointments.find(a => 
+                    const apt = Array.isArray(appointments) ? appointments.find(a => 
                         new Date(a.appointmentDate).toDateString() === new Date(selectedDate).toDateString() && 
                         a.timeSlot === slot &&
                         a.status === 'approved'
-                    );
+                    ) : null;
                     return (
                         <div key={slot} className={`p-3 rounded-2xl border flex flex-col gap-1 transition-all ${
                             apt ? 'bg-amber-50 border-amber-100' : 'bg-emerald-50 border-emerald-100'

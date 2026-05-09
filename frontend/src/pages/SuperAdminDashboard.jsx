@@ -37,7 +37,11 @@ const SuperAdminDashboard = () => {
                 setStats(data);
                 
                 const logs = await adminService.getLoginLogs(userInfo.token);
-                setLoginLogs(logs);
+                if (Array.isArray(logs)) {
+                    setLoginLogs(logs);
+                } else if (logs && Array.isArray(logs.data)) {
+                    setLoginLogs(logs.data);
+                }
             } catch (error) {
                 console.error("Error fetching admin stats", error);
             } finally {
@@ -170,7 +174,7 @@ const SuperAdminDashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {loginLogs.map((log) => (
+                            {Array.isArray(loginLogs) && loginLogs.map((log) => (
                                 <tr key={log._id} className="hover:bg-slate-50/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -256,7 +260,7 @@ const SuperAdminDashboard = () => {
                                 <>
                                     {/* Real Data Line */}
                                     <path 
-                                        d={`M ${stats.trendData.map((d, i) => `${(i / (stats.trendData.length - 1)) * 1000} ${200 - (Math.min(d.count, 20) * 8)}`).join(' L ')}`} 
+                                        d={`M ${Array.isArray(stats.trendData) ? stats.trendData.map((d, i) => `${(i / (stats.trendData.length - 1)) * 1000} ${200 - (Math.min(d.count, 20) * 8)}`).join(' L ') : ''}`} 
                                         fill="none" 
                                         stroke="#4f46e5" 
                                         strokeWidth="4" 
@@ -264,7 +268,7 @@ const SuperAdminDashboard = () => {
                                         className="drop-shadow-lg animate-draw"
                                     />
                                     {/* Data Points */}
-                                    {stats.trendData.map((d, i) => (
+                                    {Array.isArray(stats.trendData) && stats.trendData.map((d, i) => (
                                         <circle 
                                             key={i}
                                             cx={(i / (stats.trendData.length - 1)) * 1000} 

@@ -28,7 +28,11 @@ const ManageDoctors = () => {
     const fetchDoctors = async () => {
         try {
             const { data } = await api.get('/api/doctors');
-            setDoctors(data);
+            if (Array.isArray(data)) {
+                setDoctors(data);
+            } else if (data && Array.isArray(data.data)) {
+                setDoctors(data.data);
+            }
         } catch (error) {
             console.error(error);
         } finally {
@@ -155,7 +159,7 @@ const ManageDoctors = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {doctors.map((doctor) => (
+                        {Array.isArray(doctors) && doctors.map((doctor) => (
                             <tr key={doctor._id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="flex items-center">
@@ -188,7 +192,7 @@ const ManageDoctors = () => {
 
                             </tr>
                         ))}
-                        {doctors.length === 0 && !loading && (
+                        {Array.isArray(doctors) && doctors.length === 0 && !loading && (
                             <tr>
                                 <td colSpan="4" className="px-6 py-10 text-center text-slate-400 italic">No doctors registered in the system yet.</td>
                             </tr>

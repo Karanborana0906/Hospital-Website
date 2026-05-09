@@ -19,7 +19,11 @@ const ManageUsers = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             // Note: We need to ensure the backend has an endpoint for this
             const { data } = await apiService.adminGetUsers();
-            setUsers(data);
+            if (Array.isArray(data)) {
+                setUsers(data);
+            } else if (data && Array.isArray(data.data)) {
+                setUsers(data.data);
+            }
         } catch (error) {
             console.error(error);
             setUsers([]);
@@ -40,10 +44,10 @@ const ManageUsers = () => {
         }
     };
 
-    const filteredUsers = users.filter(u => 
-        u.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        u.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredUsers = Array.isArray(users) ? users.filter(u => 
+        u.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : [];
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -77,7 +81,7 @@ const ManageUsers = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {filteredUsers.map((user) => (
+                        {Array.isArray(filteredUsers) && filteredUsers.map((user) => (
                             <tr key={user._id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="font-bold text-slate-800">{user.name}</div>

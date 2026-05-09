@@ -52,8 +52,23 @@ const Appointments = () => {
         const config = { headers: { Authorization: `Bearer ${user?.token}` } };
         
         // Use Promise.all if real API, simulating fallback for UI
-        api.get('/api/appointments', config).then(res => setAppointments(res.data)).catch(err => console.log('Mocking appointments'));
-        api.get('/api/doctors').then(res => setDoctors(res.data)).catch(err => {
+        api.get('/api/appointments', config).then(res => {
+          const data = res.data;
+          if (Array.isArray(data)) {
+            setAppointments(data);
+          } else if (data && Array.isArray(data.data)) {
+            setAppointments(data.data);
+          }
+        }).catch(err => console.log('Mocking appointments'));
+        
+        api.get('/api/doctors').then(res => {
+          const data = res.data;
+          if (Array.isArray(data)) {
+            setDoctors(data);
+          } else if (data && Array.isArray(data.data)) {
+            setDoctors(data.data);
+          }
+        }).catch(err => {
           setDoctors([
             { _id: '69b4fafec84c714ef6b66f46', userId: { name: 'Dr. Sarah Jenkins' }, specialization: 'Cardiology' },
             { _id: '69b4fafec84c714ef6b66f47', userId: { name: 'Dr. Michael Chen' }, specialization: 'Neurology' }
@@ -192,7 +207,7 @@ const Appointments = () => {
 
               {showDropdown && (
                 <div className="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto">
-                  {filteredDoctors.length > 0 ? (
+                  {Array.isArray(filteredDoctors) && filteredDoctors.length > 0 ? (
                     filteredDoctors.map(doc => (
                       <div
                         key={doc._id}
@@ -262,13 +277,13 @@ const Appointments = () => {
           
           {loading ? (
             <div className="text-center py-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div></div>
-          ) : appointments.length === 0 ? (
+          ) : (Array.isArray(appointments) && appointments.length === 0) ? (
             <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">
               <CalendarIcon className="w-12 h-12 mx-auto text-slate-300 mb-3" />
               <p>You don't have any appointments booked yet.</p>
             </div>
           ) : (
-             appointments.map((apt, idx) => (
+             Array.isArray(appointments) && appointments.map((apt, idx) => (
               <div key={idx} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4 sm:mb-0">
                   <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-4 flex-shrink-0">

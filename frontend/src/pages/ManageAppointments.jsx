@@ -20,7 +20,11 @@ const ManageAppointments = () => {
             const endpoint = userInfo.role === 'superadmin' ? '/api/appointments/admin' : '/api/appointments/doctor';
             
             const { data } = await api.get(endpoint, config);
-            setAppointments(data);
+            if (Array.isArray(data)) {
+                setAppointments(data);
+            } else if (data && Array.isArray(data.data)) {
+                setAppointments(data.data);
+            }
         } catch (error) {
 
             console.error(error);
@@ -103,7 +107,7 @@ const ManageAppointments = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {appointments.map((apt) => (
+                        {Array.isArray(appointments) && appointments.map((apt) => (
                             <tr key={apt._id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4">
                                     <p className="font-bold text-slate-800">{apt.patientId?.name}</p>

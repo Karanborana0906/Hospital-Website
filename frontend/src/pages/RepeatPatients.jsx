@@ -17,7 +17,11 @@ const RepeatPatients = () => {
             const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
             
             const { data } = await apiService.getRepeatPatients();
-            setRepeatPatients(data);
+            if (Array.isArray(data)) {
+                setRepeatPatients(data);
+            } else if (data && Array.isArray(data.data)) {
+                setRepeatPatients(data.data);
+            }
         } catch (error) {
             console.error('Error fetching repeat patients:', error);
         } finally {
@@ -39,7 +43,7 @@ const RepeatPatients = () => {
                 <div className="text-center py-10">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                 </div>
-            ) : repeatPatients.length === 0 ? (
+            ) : (Array.isArray(repeatPatients) && repeatPatients.length === 0) ? (
                 <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">
                     <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                     <p>No repeat patients found yet.</p>
@@ -72,7 +76,7 @@ const RepeatPatients = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {repeatPatients.map((item) => (
+                            {Array.isArray(repeatPatients) && repeatPatients.map((item) => (
                                 <tr key={item._id} className="hover:bg-slate-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <p className="font-bold text-slate-800">{item.patient?.name}</p>

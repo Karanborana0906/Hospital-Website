@@ -21,7 +21,11 @@ const ManageMedicinesAdmin = () => {
     const fetchMedicines = async () => {
         try {
             const { data } = await api.get('/api/medicines');
-            setMedicines(data);
+            if (Array.isArray(data)) {
+                setMedicines(data);
+            } else if (data && Array.isArray(data.data)) {
+                setMedicines(data.data);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -121,7 +125,7 @@ const ManageMedicinesAdmin = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {medicines.map((med) => (
+                        {Array.isArray(medicines) && medicines.map((med) => (
                             <tr key={med._id} className="hover:bg-slate-50 transition-colors">
                                 <td className="px-6 py-4 font-bold text-slate-800">{med.name}</td>
                                 <td className="px-6 py-4">

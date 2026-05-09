@@ -21,7 +21,11 @@ const ManageReports = () => {
             const endpoint = userInfo.role === 'superadmin' ? '/api/reports/admin' : '/api/reports/doctor';
             
             const { data } = await apiService.adminGetReports();
-            setReports(data);
+            if (Array.isArray(data)) {
+                setReports(data);
+            } else if (data && Array.isArray(data.data)) {
+                setReports(data.data);
+            }
         } catch (error) {
             console.error("Error fetching reports", error);
             setReports([]);
@@ -30,10 +34,10 @@ const ManageReports = () => {
         }
     };
 
-    const filteredReports = reports.filter(report => 
-        report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filteredReports = Array.isArray(reports) ? reports.filter(report => 
+        report.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.patientId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ) : [];
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen bg-slate-50/30">
@@ -77,7 +81,7 @@ const ManageReports = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
-                                {filteredReports.map((report) => (
+                                {Array.isArray(filteredReports) && filteredReports.map((report) => (
                                     <tr key={report._id} className="hover:bg-slate-50/50 transition-colors group">
                                         <td className="px-8 py-6">
                                             <div className="flex items-center gap-4">
