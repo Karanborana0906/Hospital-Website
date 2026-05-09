@@ -75,8 +75,19 @@ export const getDoctorReports = async (req, res) => {
 
     
     // Find all patients who have appointments with this doctor
-    const appointments = await Appointment.find({ doctorId: doctor._id }).distinct('patientId');
-    const reports = await fetchDoctorReports(appointments);
+    const assignedPatients = await Appointment.find({ doctorId: doctor._id }).distinct('patientId');
+    
+    // Fetch reports:
+    // 1. Specifically assigned to this doctor via doctorId
+    // 2. OR reports of patients who have appointments with this doctor (legacy/general access)
+    const reports = await Report.find({
+        $or: [
+            { doctorId: doctor._id },
+            { patientId: { $in: assignedPatients } }
+        ]
+    })
+    .populate('patientId', 'name email')
+    .sort({ uploadDate: -1 });
     
     res.json(reports);
   } catch (error) {

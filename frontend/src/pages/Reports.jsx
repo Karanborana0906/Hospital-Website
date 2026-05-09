@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService.js';
+import { API_BASE_URL } from '../config/api.js';
 import { FileText, Upload, File, AlertCircle } from 'lucide-react';
 
 const Reports = () => {
@@ -199,7 +200,7 @@ const Reports = () => {
                      </div>
                      <p className="text-xs text-slate-600 line-clamp-2">{report?.description || 'No description provided.'}</p>
                      <div className="mt-3">
-                        <a href={report?.filePath ? `${report.filePath}` : '#'} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">
+                        <a href={report?.filePath ? `${API_BASE_URL}${report.filePath}` : '#'} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">
                           View Document &rarr;
                         </a>
                      </div>

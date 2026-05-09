@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { apiService } from '../services/apiService.js';
+import { API_BASE_URL } from '../config/api.js';
 import { FileText, Download, ArrowLeft, Search, User, Calendar as CalendarIcon, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -126,7 +127,7 @@ const ManageReports = () => {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <a 
-                                                href={`${report.filePath}`} 
+                                                href={`${API_BASE_URL}${report.filePath}`} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200"
