@@ -14,6 +14,8 @@ export const uploadReport = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
+    console.log(`📤 Uploading Report: "${title}" for Doctor ID: ${doctorId || 'NONE'}`);
+
     const createdReport = await createReport({
       patientId: req.user._id,
       title,
@@ -77,21 +79,27 @@ export const getDoctorReports = async (req, res) => {
     // Find all patients who have appointments with this doctor
     const assignedPatients = await Appointment.find({ doctorId: doctor._id }).distinct('patientId');
     
+    console.log(`👨‍⚕️ Doctor ${doctor._id} has ${assignedPatients.length} assigned patients.`);
+
     // Fetch reports:
     // 1. Specifically assigned to this doctor via doctorId
-    // 2. OR reports of patients who have appointments with this doctor (legacy/general access)
-    const reports = await Report.find({
+    // 2. OR reports of patients who have appointments with this doctor
+    const query = {
         $or: [
             { doctorId: doctor._id },
             { patientId: { $in: assignedPatients } }
         ]
-    })
+    };
+
+    const reports = await Report.find(query)
     .populate('patientId', 'name email')
     .populate({
         path: 'doctorId',
         populate: { path: 'userId', select: 'name' }
     })
     .sort({ uploadDate: -1 });
+    
+    console.log(`📋 Found ${reports.length} reports for this doctor.`);
     
     res.json(reports);
   } catch (error) {
