@@ -83,8 +83,10 @@ const Doctors = () => {
       return { ...doc, distance };
     })
     .filter(doc => {
-      const matchesSearch = doc.userId?.name.toLowerCase().includes(searchFilter.toLowerCase()) || 
-                           doc.specialization.toLowerCase().includes(searchFilter.toLowerCase());
+      const name = doc.userId?.name || doc.name || '';
+      const spec = doc.specialization || '';
+      const matchesSearch = name.toLowerCase().includes(searchFilter.toLowerCase()) || 
+                           spec.toLowerCase().includes(searchFilter.toLowerCase());
       const matchesCity = !cityFilter || doc.city?.toLowerCase() === cityFilter.toLowerCase();
       return matchesSearch && matchesCity;
     }) : [];
@@ -212,7 +214,7 @@ const Doctors = () => {
                 <div className="p-8">
                   <div className="flex items-start justify-between mb-6">
                     <div className="h-24 w-24 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl flex justify-center items-center text-blue-600 font-bold text-3xl group-hover:scale-105 transition-transform duration-500 shadow-inner">
-                      {doctor.userId?.name.charAt(4) || 'D'}
+                      {doctor.userId?.name.replace('Dr. ', '').charAt(0).toUpperCase() || 'D'}
                     </div>
                     <div className="flex flex-col items-end space-y-3">
                       <div className="flex items-center bg-amber-50/80 backdrop-blur-sm px-3 py-1.5 rounded-full text-amber-700 text-xs font-black tracking-wider uppercase border border-amber-100">

@@ -38,34 +38,47 @@ const MapComponent = ({ doctors = [], hospitals = [], userLocation, height = "40
 
       {/* Doctor Markers */}
       {doctors.map((doctor, idx) => {
-        // Randomly scatter around center for DEMO
-        const offsetLat = (Math.random() - 0.5) * 40;
-        const offsetLng = (Math.random() - 0.5) * 60;
+        // Use real lat/lng if available, otherwise scatter
+        let leftPos = 50;
+        let topPos = 50;
+
+        if (doctor.location && doctor.location.lat && doctor.location.lng) {
+            // Mapping lat/lng to percentage for demo purposes
+            // This is a simple linear mapping for India-wide view
+            // Mumbai center approx (19, 73) -> (50, 50)
+            leftPos = 50 + (doctor.location.lng - 72.8777) * 4; 
+            topPos = 50 - (doctor.location.lat - 19.0760) * 4;
+        } else {
+            const offsetLat = (idx % 2 === 0) ? -15 : 20;
+            const offsetLng = (idx % 3 === 0) ? -25 : 15;
+            leftPos = 50 + offsetLng;
+            topPos = 50 + offsetLat;
+        }
         
         const openGoogleMaps = () => {
-            const query = encodeURIComponent(`${doctor.userId?.name} ${doctor.city}`);
+            const query = encodeURIComponent(`${doctor.userId?.name || doctor.name} ${doctor.city}`);
             window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
         };
 
         return (
           <div 
-            key={doctor._id}
+            key={doctor._id || idx}
             onClick={openGoogleMaps}
             className="absolute z-10 transform -translate-x-1/2 -translate-y-full flex flex-col items-center group cursor-pointer"
             style={{ 
-              left: `${50 + offsetLng}%`, 
-              top: `${50 + offsetLat}%` 
+              left: `${leftPos}%`, 
+              top: `${topPos}%` 
             }}
           >
             {/* Tooltip */}
             <div className="mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white p-2 rounded-lg shadow-xl border border-slate-100 min-w-[120px] pointer-events-none">
-              <p className="font-bold text-slate-800 text-xs">{doctor.userId?.name}</p>
+              <p className="font-bold text-slate-800 text-xs">{doctor.userId?.name || doctor.name}</p>
               <p className="text-[10px] text-blue-600 font-bold">{doctor.specialization}</p>
               <p className="text-[8px] text-slate-400 mt-1 italic">Click to view on Google Maps</p>
             </div>
             
-            <MapPin className="w-8 h-8 text-blue-500 fill-current drop-shadow-md transition-transform group-hover:scale-110" />
-            <div className="w-2 h-2 bg-slate-900/20 rounded-full blur-[1px] mt-1" />
+            <MapPin className="w-8 h-8 text-blue-600 fill-blue-50 drop-shadow-md transition-transform group-hover:scale-110" />
+            <div className="w-2 h-2 bg-blue-900/20 rounded-full blur-[1px] mt-1" />
           </div>
         );
       })}
