@@ -75,11 +75,11 @@ const Reports = () => {
         } 
       };
       
-      const { data } = await apiService.uploadReport(formData);
+      const response = await apiService.uploadReport(formData);
+      const newReport = response?.data || response;
       
-      // Safety check for data
-      if (data) {
-        setReports(prev => [data, ...prev]);
+      if (newReport) {
+        setReports(prev => [newReport, ...prev]);
         setMessage('Report uploaded successfully');
         setTitle('');
         setDescription('');
