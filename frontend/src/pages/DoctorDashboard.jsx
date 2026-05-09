@@ -28,14 +28,13 @@ const DoctorDashboard = () => {
 
     const fetchDoctorData = async () => {
         try {
-            const statsData = await doctorService.getStats(userInfo.token);
-            setStats(statsData);
+            const stats = await doctorService.getStats(userInfo.token);
+            setStats(stats?.data || stats);
             
-            const aptData = await doctorService.getAppointments(userInfo.token);
+            const apts = await doctorService.getAppointments(userInfo.token);
+            const aptData = apts?.data || apts;
             if (Array.isArray(aptData)) {
                 setAppointments(aptData);
-            } else if (aptData && Array.isArray(aptData.data)) {
-                setAppointments(aptData.data);
             }
         } catch (error) {
             console.error("Error fetching doctor data", error);

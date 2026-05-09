@@ -21,11 +21,10 @@ const ManageReports = () => {
             // Choose endpoint based on role
             const endpoint = userInfo.role === 'superadmin' ? '/api/reports/admin' : '/api/reports/doctor';
             
-            const { data } = await apiService.adminGetReports();
+            const response = await apiService.adminGetReports();
+            const data = response?.data || response;
             if (Array.isArray(data)) {
                 setReports(data);
-            } else if (data && Array.isArray(data.data)) {
-                setReports(data.data);
             }
         } catch (error) {
             console.error("Error fetching reports", error);

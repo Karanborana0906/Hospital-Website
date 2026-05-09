@@ -34,13 +34,14 @@ const SuperAdminDashboard = () => {
         const fetchDashboardData = async () => {
             try {
                 const data = await adminService.getStats(userInfo.token);
-                setStats(data);
+                // Handle both { success, data } and direct object formats
+                const statsData = data?.data || data;
+                setStats(statsData);
                 
                 const logs = await adminService.getLoginLogs(userInfo.token);
-                if (Array.isArray(logs)) {
-                    setLoginLogs(logs);
-                } else if (logs && Array.isArray(logs.data)) {
-                    setLoginLogs(logs.data);
+                const logsData = logs?.data || logs;
+                if (Array.isArray(logsData)) {
+                    setLoginLogs(logsData);
                 }
             } catch (error) {
                 console.error("Error fetching admin stats", error);
