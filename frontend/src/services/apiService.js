@@ -158,27 +158,27 @@ export const apiService = {
   
   // Admin APIs
   adminGetUsers: async () => {
-    const { data } = await api.get('/api/admin/users');
+    const { data } = await api.get('/api/auth/users');
     return data;
   },
   
   adminGetDoctors: async () => {
-    const { data } = await api.get('/api/admin/doctors');
+    const { data } = await api.get('/api/doctors');
     return data;
   },
   
   adminGetAppointments: async () => {
-    const { data } = await api.get('/api/admin/appointments');
+    const { data } = await api.get('/api/appointments/admin');
     return data;
   },
   
   adminGetReports: async () => {
-    const { data } = await api.get('/api/admin/reports');
+    const { data } = await api.get('/api/reports/admin');
     return data;
   },
   
   adminGetMedicines: async () => {
-    const { data } = await api.get('/api/admin/medicines');
+    const { data } = await api.get('/api/medicines');
     return data;
   },
   
