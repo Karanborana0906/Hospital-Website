@@ -12,7 +12,13 @@ const MapComponent = ({ doctors = [], hospitals = [], userLocation, height = "40
       style={{ height }}
     >
       {/* Simulated Map Background */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
+      <div 
+        className="absolute inset-0 opacity-20 cursor-pointer"
+        onClick={() => {
+            const query = encodeURIComponent(`hospitals near ${doctors[0]?.city || hospitals[0]?.city || 'me'}`);
+            window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+        }}
+      >
         <div className="absolute inset-0 bg-[url('https://www.google.com/maps/vt/pb=!1m4!1m3!1i12!2i2345!3i1234!2m3!1e0!2sm!3i123456789!3m8!2sen!3sus!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1f2')] bg-repeat" />
       </div>
 

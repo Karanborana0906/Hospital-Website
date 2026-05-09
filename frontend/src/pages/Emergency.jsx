@@ -69,11 +69,14 @@ const Emergency = () => {
           </div>
           <h2 className="text-2xl font-bold mb-2 relative z-10">24/7 Ambulance Service</h2>
           <p className="mb-6 relative z-10 text-red-100">Fast and reliable emergency transport equipped with advanced life support.</p>
-          <a href="tel:911" className="block text-5xl font-extrabold tracking-wider mb-8 relative z-10 hover:text-red-100 transition-colors cursor-pointer">
-            911
+          <a 
+            href="tel:102" 
+            className="block text-5xl font-extrabold tracking-wider mb-8 relative z-10 hover:text-red-100 transition-colors cursor-pointer"
+          >
+            102
           </a>
           <a 
-            href="tel:911" 
+            href="tel:102" 
             className="inline-block bg-white text-red-600 font-bold py-3 px-8 rounded-full shadow-md hover:bg-neutral-100 transition-colors w-full sm:w-auto relative z-10 text-center"
           >
             Request Ambulance Now
