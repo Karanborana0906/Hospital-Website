@@ -9,12 +9,21 @@ export const createReport = async (reportData) => {
 };
 
 export const fetchUserReports = async (userId) => {
-  return await Report.find({ patientId: userId }).sort({ uploadDate: -1 });
+  return await Report.find({ patientId: userId })
+    .populate({
+      path: 'doctorId',
+      populate: { path: 'userId', select: 'name' }
+    })
+    .sort({ uploadDate: -1 });
 };
 
 export const fetchAllReports = async () => {
   return await Report.find({})
     .populate('patientId', 'name email')
+    .populate({
+      path: 'doctorId',
+      populate: { path: 'userId', select: 'name' }
+    })
     .sort({ uploadDate: -1 });
 };
 

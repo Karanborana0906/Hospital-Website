@@ -7,7 +7,7 @@ import Appointment from '../models/appointmentModel.js';
 // @route   POST /api/reports
 // @access  Private
 export const uploadReport = async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, doctorId } = req.body;
 
   try {
     if (!req.file) {
@@ -18,6 +18,7 @@ export const uploadReport = async (req, res) => {
       patientId: req.user._id,
       title,
       description,
+      doctorId: doctorId || null,
       filePath: `/${req.file.path.replace(/\\/g, '/')}`, // Normalize path for windows
     });
 

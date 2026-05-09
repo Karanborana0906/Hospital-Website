@@ -20,6 +20,11 @@ const reportSchema = new mongoose.Schema({
   uploadDate: {
     type: Date,
     default: Date.now,
+  },
+  doctorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Doctor',
+    required: false,
   }
 }, {
   timestamps: true,

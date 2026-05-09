@@ -9,6 +9,8 @@ const Reports = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [doctors, setDoctors] = useState([]);
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
 
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
@@ -26,7 +28,22 @@ const Reports = () => {
         console.error('Error fetching reports:', err);
       }
     };
+
+    const fetchDoctors = async () => {
+      try {
+        const data = await apiService.getDoctors();
+        if (Array.isArray(data)) {
+          setDoctors(data);
+        } else if (data && Array.isArray(data.data)) {
+          setDoctors(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching doctors:', err);
+      }
+    };
+
     fetchReports();
+    fetchDoctors();
   }, [userInfo.token]);
 
   const handleFileChange = (e) => {
@@ -44,6 +61,9 @@ const Reports = () => {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('reportFile', file);
+    if (selectedDoctorId) {
+      formData.append('doctorId', selectedDoctorId);
+    }
 
     setLoading(true);
     try {
@@ -63,6 +83,7 @@ const Reports = () => {
         setTitle('');
         setDescription('');
         setFile(null);
+        setSelectedDoctorId('');
       }
     } catch (err) {
       setMessage(err.response?.data?.message || err.response?.data?.error || 'Error uploading report.');
@@ -103,6 +124,25 @@ const Reports = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
+            </div>
+
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Assign to Doctor (Optional)</label>
+              <select 
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 bg-slate-50"
+                value={selectedDoctorId}
+                onChange={(e) => setSelectedDoctorId(e.target.value)}
+              >
+                <option value="">Select a Doctor...</option>
+                {Array.isArray(doctors) && doctors.map(doc => (
+                  <option key={doc._id} value={doc._id}>
+                    {doc.userId?.name} ({doc.specialization})
+                  </option>
+                ))}
+              </select>
+              <p className="text-[10px] text-slate-400 mt-1 uppercase font-bold tracking-wider">Report will be visible to this doctor</p>
             </div>
 
             <div>
@@ -153,7 +193,12 @@ const Reports = () => {
                    </div>
                    <div className="flex-1 min-w-0">
                      <h3 className="text-sm font-bold text-slate-800 truncate mb-1" title={report?.title || 'Report'}>{report?.title || 'Medical Report'}</h3>
-                     <p className="text-xs text-slate-500 mb-2">{new Date(report?.uploadDate || report?.createdAt || Date.now()).toLocaleDateString()}</p>
+                     <div className="flex items-center gap-2 mb-2">
+                        <p className="text-[10px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded uppercase">{new Date(report?.uploadDate || report?.createdAt || Date.now()).toLocaleDateString()}</p>
+                        {report.doctorId && (
+                          <p className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded uppercase">Dr. {report.doctorId?.userId?.name || 'Assigned'}</p>
+                        )}
+                     </div>
                      <p className="text-xs text-slate-600 line-clamp-2">{report?.description || 'No description provided.'}</p>
                      <div className="mt-3">
                         <a href={report?.filePath ? `${report.filePath}` : '#'} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">

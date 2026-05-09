@@ -76,6 +76,7 @@ const ManageReports = () => {
                                 <tr className="bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">
                                     <th className="px-8 py-5">Report Details</th>
                                     <th className="px-8 py-5">Patient Information</th>
+                                    <th className="px-8 py-5">Assigned Doctor</th>
                                     <th className="px-8 py-5">Uploaded On</th>
                                     <th className="px-8 py-5 text-right">Actions</th>
                                 </tr>
@@ -110,6 +111,18 @@ const ManageReports = () => {
                                                 <CalendarIcon className="w-4 h-4 text-slate-300" />
                                                 <span className="text-xs font-bold">{new Date(report.uploadDate).toLocaleDateString()}</span>
                                             </div>
+                                        </td>
+                                        <td className="px-8 py-6">
+                                            {report.doctorId ? (
+                                              <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-[8px] font-black text-blue-600 border border-blue-100">
+                                                    D
+                                                </div>
+                                                <p className="text-xs font-bold text-slate-700">Dr. {report.doctorId?.userId?.name || 'N/A'}</p>
+                                              </div>
+                                            ) : (
+                                              <span className="text-[10px] font-bold text-slate-300 uppercase italic">Not Assigned</span>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <a 
