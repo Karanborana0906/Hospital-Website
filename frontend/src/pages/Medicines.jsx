@@ -16,8 +16,10 @@ const Medicines = () => {
     setLoading(true);
     try {
       // In a real app we fetch this from API, for UI demonstration we use placeholder if backend fails
-      const { data } = await apiService.getMedicines(searchKw);
-      setMedicines(data);
+      const data = await apiService.getMedicines(searchKw);
+      if (Array.isArray(data)) {
+        setMedicines(data);
+      }
     } catch (error) {
       console.error('Error fetching medicines', error);
       // Fallback data if DB is empty / backend disconnected
@@ -100,7 +102,7 @@ const Medicines = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {medicines.map((med) => (
+            {Array.isArray(medicines) && medicines.map((med) => (
               <div key={med._id} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-all group">
                 <div className="px-6 py-5 border-b border-slate-100 bg-slate-50 flex items-start justify-between">
                   <div>
@@ -139,7 +141,7 @@ const Medicines = () => {
           </div>
         )}
 
-        {!loading && medicines.length === 0 && (
+        {!loading && Array.isArray(medicines) && medicines.length === 0 && (
           <div className="text-center py-20 text-slate-500 bg-white rounded-2xl border border-dashed border-slate-300">
             <Search className="w-12 h-12 mx-auto text-slate-300 mb-3" />
             <p className="text-lg">No medicines found matching "{keyword}".</p>

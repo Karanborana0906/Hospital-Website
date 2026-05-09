@@ -143,8 +143,10 @@ export const apiService = {
   },
   
   // Medicines APIs
-  getMedicines: async () => {
-    const { data } = await api.get('/api/medicines');
+  getMedicines: async (keyword = '') => {
+    const { data } = await api.get('/api/medicines', {
+      params: keyword ? { keyword } : {}
+    });
     return data;
   },
   

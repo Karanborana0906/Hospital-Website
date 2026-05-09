@@ -22,8 +22,10 @@ const Doctors = () => {
   const { data: doctorsData, loading: apiLoading, error: apiError } = useApi(apiService.getDoctors);
 
   useEffect(() => {
-    if (doctorsData) {
+    if (Array.isArray(doctorsData)) {
       setDoctors(doctorsData);
+    } else if (doctorsData && Array.isArray(doctorsData.data)) {
+      setDoctors(doctorsData.data);
     }
     setLoading(apiLoading);
   }, [doctorsData, apiLoading]);
@@ -67,7 +69,7 @@ const Doctors = () => {
   }, [apiError]);
 
   // Calculate distances and filter
-  const processedDoctors = doctors
+  const processedDoctors = Array.isArray(doctors) ? doctors
     .map(doc => {
       let distance = null;
       if (user?.location && doc.location) {
@@ -85,7 +87,7 @@ const Doctors = () => {
                            doc.specialization.toLowerCase().includes(searchFilter.toLowerCase());
       const matchesCity = !cityFilter || doc.city?.toLowerCase() === cityFilter.toLowerCase();
       return matchesSearch && matchesCity;
-    });
+    }) : [];
 
   // Sort by distance if enabled and user location available
   if (sortByDistance && user?.location) {
@@ -96,7 +98,7 @@ const Doctors = () => {
     });
   }
 
-  const cities = [...new Set(doctors.map(doc => doc.city))].filter(Boolean);
+  const cities = Array.isArray(doctors) ? [...new Set(doctors.map(doc => doc.city))].filter(Boolean) : [];
 
   const isAvailableToday = (doc) => {
     if (!doc.availableDays) return true; // Default fallback
@@ -201,7 +203,7 @@ const Doctors = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {processedDoctors.map((doctor, index) => (
+            {Array.isArray(processedDoctors) && processedDoctors.map((doctor, index) => (
               <div 
                 key={doctor._id} 
                 className="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden hover-lift group animate-slide-up"
