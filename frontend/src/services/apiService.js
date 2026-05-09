@@ -177,6 +177,11 @@ export const apiService = {
     return data;
   },
   
+  doctorGetReports: async () => {
+    const { data } = await api.get('/api/reports/doctor');
+    return data;
+  },
+  
   adminGetMedicines: async () => {
     const { data } = await api.get('/api/medicines');
     return data;

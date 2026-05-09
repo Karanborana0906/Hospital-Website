@@ -16,12 +16,10 @@ const ManageReports = () => {
     const fetchReports = async () => {
         try {
             const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-            const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
-            
-            // Choose endpoint based on role
-            const endpoint = userInfo.role === 'superadmin' ? '/api/reports/admin' : '/api/reports/doctor';
-            
-            const response = await apiService.adminGetReports();
+            const response = userInfo.role === 'doctor' 
+                ? await apiService.doctorGetReports() 
+                : await apiService.adminGetReports();
+                
             const data = response?.data || response;
             if (Array.isArray(data)) {
                 setReports(data);
